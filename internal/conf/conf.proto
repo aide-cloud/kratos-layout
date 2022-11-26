@@ -15,11 +15,13 @@ message Server {
     string network = 1;
     string addr = 2;
     google.protobuf.Duration timeout = 3;
+    string mode = 4;
   }
   message GRPC {
     string network = 1;
     string addr = 2;
     google.protobuf.Duration timeout = 3;
+    string mode = 4;
   }
   HTTP http = 1;
   GRPC grpc = 2;
@@ -29,13 +31,16 @@ message Data {
   message Database {
     string driver = 1;
     string source = 2;
+    string db_name = 3;
+    bool debug = 4;
   }
   message Redis {
     string network = 1;
     string addr = 2;
     google.protobuf.Duration read_timeout = 3;
     google.protobuf.Duration write_timeout = 4;
+    string db_name = 5;
   }
-  Database database = 1;
-  Redis redis = 2;
+  repeated Database databases = 1;
+  repeated Redis redis = 2;
 }

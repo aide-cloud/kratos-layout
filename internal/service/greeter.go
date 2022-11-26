@@ -2,28 +2,41 @@ package service
 
 import (
 	"context"
-
-	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
-	"github.com/go-kratos/kratos-layout/internal/biz"
+	pb "github.com/go-kratos/kratos-layout/api/helloworld/v1"
+	"github.com/go-kratos/kratos/v2/log"
 )
 
-// GreeterService is a greeter service.
-type GreeterService struct {
-	v1.UnimplementedGreeterServer
+type (
+	GreeterService struct {
+		pb.UnimplementedGreeterServer
 
-	uc *biz.GreeterUsecase
-}
-
-// NewGreeterService new a greeter service.
-func NewGreeterService(uc *biz.GreeterUsecase) *GreeterService {
-	return &GreeterService{uc: uc}
-}
-
-// SayHello implements helloworld.GreeterServer.
-func (s *GreeterService) SayHello(ctx context.Context, in *v1.HelloRequest) (*v1.HelloReply, error) {
-	g, err := s.uc.CreateGreeter(ctx, &biz.Greeter{Hello: in.Name})
-	if err != nil {
-		return nil, err
+		logger *log.Helper
+		logic  GreeterLogicInterface
 	}
-	return &v1.HelloReply{Message: "Hello " + g.Hello}, nil
+
+	GreeterGraphqlService struct {
+		*GreeterService
+	}
+
+	GreeterLogicInterface interface {
+		SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error)
+	}
+)
+
+func NewGreeterService(logic GreeterLogicInterface, logger log.Logger) *GreeterService {
+	return &GreeterService{logger: log.NewHelper(logger), logic: logic}
+}
+
+func NewGreeterGraphqlService(s *GreeterService) *GreeterGraphqlService {
+	return &GreeterGraphqlService{GreeterService: s}
+}
+
+func (s *GreeterGraphqlService) SayHello(ctx context.Context, args struct {
+	In *pb.HelloRequest
+}) (*pb.HelloReply, error) {
+	return s.GreeterService.SayHello(ctx, args.In)
+}
+
+func (s *GreeterService) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
+	return Validate(ctx, req, s.logic.SayHello)
 }

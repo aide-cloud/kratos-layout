@@ -5,6 +5,7 @@ import (
 	"embed"
 	"github.com/aide-cloud/graphql-http"
 	"github.com/gin-gonic/gin"
+	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
@@ -12,6 +13,7 @@ import (
 // ProviderSet is service providers.
 var ProviderSet = wire.NewSet(
 	NewGreeterService,
+	wire.Bind(new(v1.GreeterServer), new(*GreeterService)),
 	NewGraphqlService,
 	NewRoot,
 	NewGreeterGraphqlService,

@@ -9,6 +9,7 @@ import (
 var GetConfigProviderSet = wire.NewSet(
 	GetConfig,
 	wire.FieldsOf(new(*Bootstrap), "Data"),
+	wire.FieldsOf(new(*Bootstrap), "Server"),
 )
 
 func GetConfig(flagconf string) *Bootstrap {

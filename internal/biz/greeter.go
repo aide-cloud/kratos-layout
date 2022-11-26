@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"github.com/go-kratos/kratos-layout/internal/service"
 
 	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
 
@@ -19,6 +20,8 @@ type Greeter struct {
 	Hello string
 }
 
+var _ service.GreeterLogicInterface = (*GreeterUsecase)(nil)
+
 // GreeterRepo is a Greater repo.
 type GreeterRepo interface {
 	Save(context.Context, *Greeter) (*Greeter, error)
@@ -32,6 +35,11 @@ type GreeterRepo interface {
 type GreeterUsecase struct {
 	repo GreeterRepo
 	log  *log.Helper
+}
+
+func (uc *GreeterUsecase) SayHello(ctx context.Context, req *v1.HelloRequest) (*v1.HelloReply, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 // NewGreeterUsecase new a Greeter usecase.

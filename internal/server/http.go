@@ -3,7 +3,7 @@ package server
 import (
 	prometheus "github.com/aide-cloud/prom"
 	"github.com/gin-gonic/gin"
-	kgin "github.com/go-kratos/gin"
+	kGin "github.com/go-kratos/gin"
 	"github.com/go-kratos/kratos-layout/internal/conf"
 	"github.com/go-kratos/kratos-layout/internal/service"
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
@@ -27,7 +27,7 @@ type GraphqlServer interface {
 var _ GraphqlServer = (*service.GraphqlService)(nil)
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, engine *gin.Engine, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, engine *gin.Engine, _ log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -61,7 +61,7 @@ func GetGinEngine(c *conf.Server, graphqlServer *service.GraphqlService, root *s
 
 	ginEngine := gin.New()
 	ginEngine.Use(
-		kgin.Middlewares(
+		kGin.Middlewares(
 			recovery.Recovery(),
 			logging.Server(logger),
 			validate.Validator(),

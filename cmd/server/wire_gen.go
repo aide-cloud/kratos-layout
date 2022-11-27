@@ -44,7 +44,7 @@ func wireApp(string2 string) (*kratos.App, func(), error) {
 	registrar := bootstrap.Registrar
 	registry := GetETCD(registrar)
 	env := bootstrap.Env
-	v := SetEnv(env, logger)
+	v := GetEnv(env, logger)
 	app := newApp(grpcServer, httpServer, registry, v...)
 	return app, func() {
 		cleanup()

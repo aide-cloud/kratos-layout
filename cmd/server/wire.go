@@ -25,7 +25,7 @@ func wireApp(string) (*kratos.App, func(), error) {
 			data.ProviderSet,
 			biz.ProviderSet,
 			service.ProviderSet,
-			SetEnv,
+			GetEnv,
 			GetLogger,
 			GetETCD,
 			newApp,

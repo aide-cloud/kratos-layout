@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-func SetEnv(env *conf.Env, logger log.Logger) []kratos.Option {
+func GetEnv(env *conf.Env, logger log.Logger) []kratos.Option {
 	Name = env.GetName()
 	Metadata = env.GetMetadata()
 	opts := []kratos.Option{

@@ -40,7 +40,11 @@ func wireApp(string2 string, logger log.Logger) (*kratos.App, func(), error) {
 	root := service.NewRoot(greeterGraphqlService, logger)
 	engine := server.GetGinEngine(confServer, graphqlService, root, logger)
 	httpServer := server.NewHTTPServer(confServer, engine, logger)
-	app := newApp(logger, grpcServer, httpServer)
+	registrar := bootstrap.Registrar
+	registry := GetETCD(registrar)
+	env := bootstrap.Env
+	v := SetEnv(env, logger)
+	app := newApp(grpcServer, httpServer, registry, v...)
 	return app, func() {
 		cleanup()
 	}, nil

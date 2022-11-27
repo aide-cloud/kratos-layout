@@ -10,6 +10,8 @@ var GetConfigProviderSet = wire.NewSet(
 	GetConfig,
 	wire.FieldsOf(new(*Bootstrap), "Data"),
 	wire.FieldsOf(new(*Bootstrap), "Server"),
+	wire.FieldsOf(new(*Bootstrap), "Registrar"),
+	wire.FieldsOf(new(*Bootstrap), "Env"),
 )
 
 func GetConfig(flagconf string) *Bootstrap {

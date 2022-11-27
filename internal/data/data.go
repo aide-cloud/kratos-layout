@@ -69,7 +69,7 @@ func GetRPCConn(etcdClient *clientV3.Client, discovery *conf.Discovery) *grpc.Cl
 	// new dis with etcd client
 	dis := etcd.New(etcdClient)
 	endpoint := "discovery:///provider"
-	conn, err := kGrpc.Dial(context.Background(), kGrpc.WithEndpoint(endpoint), kGrpc.WithDiscovery(dis))
+	conn, err := kGrpc.DialInsecure(context.Background(), kGrpc.WithEndpoint(endpoint), kGrpc.WithDiscovery(dis))
 	if err != nil {
 		panic(err)
 	}

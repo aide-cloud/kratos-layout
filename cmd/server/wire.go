@@ -17,7 +17,7 @@ import (
 )
 
 // wireApp init kratos application.
-func wireApp(string) (*kratos.App, func(), error) {
+func wireApp(*conf.Bootstrap) (*kratos.App, func(), error) {
 	panic(
 		wire.Build(
 			conf.GetConfigProviderSet,
@@ -29,6 +29,7 @@ func wireApp(string) (*kratos.App, func(), error) {
 			GetLogger,
 			GetETCD,
 			GetETCDRegistrar,
+			GetTrace,
 			newApp,
 		),
 	)

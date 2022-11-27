@@ -22,8 +22,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(string2 string) (*kratos.App, func(), error) {
-	bootstrap := conf.GetConfig(string2)
+func wireApp(bootstrap *conf.Bootstrap) (*kratos.App, func(), error) {
 	confServer := bootstrap.Server
 	confData := bootstrap.Data
 	registrar := bootstrap.Registrar
@@ -40,11 +39,13 @@ func wireApp(string2 string) (*kratos.App, func(), error) {
 	greeterRepo := data.NewGreeterRepo(dataData, logger)
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
 	greeterService := service.NewGreeterService(greeterUsecase, logger)
-	grpcServer := server.NewGRPCServer(confServer, greeterService, logger)
+	trace := bootstrap.Trace
+	tracerProvider := GetTrace(trace)
+	grpcServer := server.NewGRPCServer(confServer, greeterService, tracerProvider, logger)
 	graphqlService := service.NewGraphqlService(logger)
 	greeterGraphqlService := service.NewGreeterGraphqlService(greeterService)
 	root := service.NewRoot(greeterGraphqlService, logger)
-	engine := server.GetGinEngine(confServer, graphqlService, root, logger)
+	engine := server.GetGinEngine(confServer, graphqlService, root, tracerProvider, logger)
 	httpServer := server.NewHTTPServer(confServer, engine, logger)
 	registry := GetETCDRegistrar(client)
 	env := bootstrap.Env

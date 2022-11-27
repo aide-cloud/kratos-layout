@@ -9,6 +9,10 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	clientV3 "go.etcd.io/etcd/client/v3"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/sdk/resource"
+	traceSdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"os"
 )
 
@@ -23,6 +27,14 @@ func GetEnv(env *conf.Env, logger log.Logger) []kratos.Option {
 		kratos.Logger(logger),
 	}
 	return opts
+}
+
+func SetEnv(env *conf.Env) {
+	Name = env.GetName()
+	Metadata = env.GetMetadata()
+	if Version == "" {
+		Version = env.GetVersion()
+	}
 }
 
 func GetETCD(registrar *conf.Registrar) *clientV3.Client {
@@ -55,6 +67,21 @@ func GetLogger(conf *conf.Log) log.Logger {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
+}
+
+func GetTrace(conf *conf.Trace) *traceSdk.TracerProvider {
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(conf.GetEndpoint())))
+	if err != nil {
+		panic(err)
+	}
+	tp := traceSdk.NewTracerProvider(
+		traceSdk.WithBatcher(exp),
+		traceSdk.WithResource(resource.NewSchemaless(
+			semconv.ServiceNameKey.String(Name),
+			semconv.ServiceVersionKey.String(Version),
+		)),
+	)
+	return tp
 }
 
 func newApp(gs *grpc.Server, hs *http.Server, etcdRegistry *etcd.Registry, opts ...kratos.Option) *kratos.App {

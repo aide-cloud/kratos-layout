@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/go-kratos/kratos-layout/internal/conf"
 	"os"
 
 	_ "go.uber.org/automaxprocs"
@@ -26,7 +27,9 @@ func init() {
 
 func main() {
 	flag.Parse()
-	app, cleanup, err := wireApp(flagConf)
+	cfg := conf.GetConfig(flagConf)
+	SetEnv(cfg.GetEnv())
+	app, cleanup, err := wireApp(cfg)
 	if err != nil {
 		panic(err)
 	}

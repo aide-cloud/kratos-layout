@@ -12,6 +12,7 @@ message Bootstrap {
   Env env = 4;
   Log log = 5;
   Discovery discovery = 6;
+  Trace trace = 7;
 }
 
 message Server {
@@ -34,6 +35,7 @@ message Server {
 message Env {
   string name = 1;
   map<string, string> metadata = 2;
+  string version = 3;
 }
 
 message Log {
@@ -70,4 +72,8 @@ message Registrar {
 
 message Discovery {
   map<string, string> providers = 1;
+}
+
+message Trace {
+  string endpoint = 1;
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/go-kratos/swagger-api/openapiv2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	traceSdk "go.opentelemetry.io/otel/sdk/trace"
 )
 
 type GraphqlServer interface {
@@ -53,7 +54,7 @@ func NewHTTPServer(c *conf.Server, engine *gin.Engine, logger log.Logger) *http.
 }
 
 // GetGinEngine 获取gin引擎
-func GetGinEngine(c *conf.Server, graphqlServer *service.GraphqlService, root *service.Root, logger log.Logger) *gin.Engine {
+func GetGinEngine(c *conf.Server, graphqlServer *service.GraphqlService, root *service.Root, tp *traceSdk.TracerProvider, logger log.Logger) *gin.Engine {
 	if c.Http.GetMode() == gin.ReleaseMode {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -64,7 +65,7 @@ func GetGinEngine(c *conf.Server, graphqlServer *service.GraphqlService, root *s
 			recovery.Recovery(),
 			logging.Server(logger),
 			validate.Validator(),
-			tracing.Server(),
+			tracing.Server(tracing.WithTracerProvider(tp)),
 			ratelimit.Server(),
 			metrics.Server(
 				metrics.WithSeconds(prom.NewHistogram(prometheus.MetricSeconds)),

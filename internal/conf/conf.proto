@@ -8,6 +8,8 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   Data data = 2;
+  Registrar registrar = 3;
+  Env env = 4;
 }
 
 message Server {
@@ -27,6 +29,11 @@ message Server {
   GRPC grpc = 2;
 }
 
+message Env {
+  string name = 1;
+  map<string, string> metadata = 2;
+}
+
 message Data {
   message Database {
     string driver = 1;
@@ -43,4 +50,12 @@ message Data {
   }
   repeated Database databases = 1;
   repeated Redis redis = 2;
+}
+
+
+message Registrar {
+  message Etcd {
+    repeated string endpoints = 1;
+  }
+  Etcd etcd = 1;
 }

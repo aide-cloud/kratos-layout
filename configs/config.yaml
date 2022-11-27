@@ -1,3 +1,11 @@
+env:
+  name: "kratos-layout-app"
+  metadata:
+    namespace: "kratos-layout-app"
+    app: "kratos-layout-app"
+    version: "0.0.1"
+    description: "Kratos Layout App"
+
 server:
   http:
     addr: 0.0.0.0:8000
@@ -13,3 +21,10 @@ data:
     - addr: 127.0.0.1:6379
       read_timeout: 0.2s
       write_timeout: 0.2s
+
+registrar:
+  etcd:
+    endpoints:
+      - "127.0.0.1:12379"
+      - "127.0.0.1:22379"
+      - "127.0.0.1:32379"

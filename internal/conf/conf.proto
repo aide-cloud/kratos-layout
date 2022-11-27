@@ -10,6 +10,7 @@ message Bootstrap {
   Data data = 2;
   Registrar registrar = 3;
   Env env = 4;
+  Log log = 5;
 }
 
 message Server {
@@ -32,6 +33,12 @@ message Server {
 message Env {
   string name = 1;
   map<string, string> metadata = 2;
+}
+
+message Log {
+  string level = 1;
+  string format = 2;
+  string output = 3;
 }
 
 message Data {

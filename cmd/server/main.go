@@ -4,8 +4,6 @@ import (
 	"flag"
 	"os"
 
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -15,30 +13,20 @@ var (
 	Name string
 	// Version is the version of the compiled software.
 	Version string
-	// flagconf is the config flag.
-	flagconf string
+	// flagConf is the config flag.
+	flagConf string
 
 	id, _    = os.Hostname()
 	Metadata = make(map[string]string)
 )
 
 func init() {
-	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+	flag.StringVar(&flagConf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
-
-	app, cleanup, err := wireApp(flagconf, logger)
+	app, cleanup, err := wireApp(flagConf)
 	if err != nil {
 		panic(err)
 	}

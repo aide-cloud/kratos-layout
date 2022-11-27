@@ -13,7 +13,6 @@ import (
 	"github.com/go-kratos/kratos-layout/internal/server"
 	"github.com/go-kratos/kratos-layout/internal/service"
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 import (
@@ -23,10 +22,12 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(string2 string, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(string2 string) (*kratos.App, func(), error) {
 	bootstrap := conf.GetConfig(string2)
 	confServer := bootstrap.Server
 	confData := bootstrap.Data
+	log := bootstrap.Log
+	logger := GetLogger(log)
 	dataData, cleanup, err := data.NewData(confData, logger)
 	if err != nil {
 		return nil, nil, err

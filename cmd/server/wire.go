@@ -13,12 +13,11 @@ import (
 	"github.com/go-kratos/kratos-layout/internal/service"
 
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
 
 // wireApp init kratos application.
-func wireApp(string, log.Logger) (*kratos.App, func(), error) {
+func wireApp(string) (*kratos.App, func(), error) {
 	panic(
 		wire.Build(
 			conf.GetConfigProviderSet,
@@ -27,6 +26,7 @@ func wireApp(string, log.Logger) (*kratos.App, func(), error) {
 			biz.ProviderSet,
 			service.ProviderSet,
 			SetEnv,
+			GetLogger,
 			GetETCD,
 			newApp,
 		),

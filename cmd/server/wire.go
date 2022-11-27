@@ -28,6 +28,7 @@ func wireApp(string) (*kratos.App, func(), error) {
 			GetEnv,
 			GetLogger,
 			GetETCD,
+			GetETCDRegistrar,
 			newApp,
 		),
 	)

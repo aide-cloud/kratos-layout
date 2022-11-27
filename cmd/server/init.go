@@ -25,7 +25,7 @@ func GetEnv(env *conf.Env, logger log.Logger) []kratos.Option {
 	return opts
 }
 
-func GetETCD(registrar *conf.Registrar) *etcd.Registry {
+func GetETCD(registrar *conf.Registrar) *clientV3.Client {
 	endpoints := registrar.GetEtcd().GetEndpoints()
 	if len(endpoints) == 0 {
 		panic("etcd endpoints is empty")
@@ -38,7 +38,11 @@ func GetETCD(registrar *conf.Registrar) *etcd.Registry {
 		panic(err)
 	}
 	// new reg with etcd client
-	return etcd.New(client)
+	return client
+}
+
+func GetETCDRegistrar(etcdClient *clientV3.Client) *etcd.Registry {
+	return etcd.New(etcdClient)
 }
 
 func GetLogger(conf *conf.Log) log.Logger {

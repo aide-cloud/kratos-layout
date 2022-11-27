@@ -26,9 +26,14 @@ func wireApp(string2 string) (*kratos.App, func(), error) {
 	bootstrap := conf.GetConfig(string2)
 	confServer := bootstrap.Server
 	confData := bootstrap.Data
+	registrar := bootstrap.Registrar
+	client := GetETCD(registrar)
+	discovery := bootstrap.Discovery
+	clientConn := data.GetRPCConn(client, discovery)
+	greeterClient := data.GetGreeterClient(clientConn)
 	log := bootstrap.Log
 	logger := GetLogger(log)
-	dataData, cleanup, err := data.NewData(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, greeterClient, logger)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -41,8 +46,7 @@ func wireApp(string2 string) (*kratos.App, func(), error) {
 	root := service.NewRoot(greeterGraphqlService, logger)
 	engine := server.GetGinEngine(confServer, graphqlService, root, logger)
 	httpServer := server.NewHTTPServer(confServer, engine, logger)
-	registrar := bootstrap.Registrar
-	registry := GetETCD(registrar)
+	registry := GetETCDRegistrar(client)
 	env := bootstrap.Env
 	v := GetEnv(env, logger)
 	app := newApp(grpcServer, httpServer, registry, v...)

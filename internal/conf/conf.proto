@@ -11,6 +11,7 @@ message Bootstrap {
   Registrar registrar = 3;
   Env env = 4;
   Log log = 5;
+  Discovery discovery = 6;
 }
 
 message Server {
@@ -65,4 +66,8 @@ message Registrar {
     repeated string endpoints = 1;
   }
   Etcd etcd = 1;
+}
+
+message Discovery {
+  map<string, string> providers = 1;
 }

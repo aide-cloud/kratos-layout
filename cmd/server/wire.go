@@ -6,9 +6,7 @@
 package main
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/biz"
 	"github.com/go-kratos/kratos-layout/internal/conf"
-	"github.com/go-kratos/kratos-layout/internal/data"
 	"github.com/go-kratos/kratos-layout/internal/server"
 	"github.com/go-kratos/kratos-layout/internal/service"
 
@@ -22,8 +20,6 @@ func wireApp(*conf.Bootstrap) (*kratos.App, func(), error) {
 		wire.Build(
 			conf.GetConfigProviderSet,
 			server.ProviderSet,
-			data.ProviderSet,
-			biz.ProviderSet,
 			service.ProviderSet,
 			GetEnv,
 			GetLogger,

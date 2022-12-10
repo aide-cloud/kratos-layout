@@ -1,13 +1,7 @@
 package data
 
 import (
-	"context"
-	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
 	"github.com/go-kratos/kratos-layout/internal/conf"
-	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
-	kGrpc "github.com/go-kratos/kratos/v2/transport/grpc"
-	clientV3 "go.etcd.io/etcd/client/v3"
-	"google.golang.org/grpc"
 	"sync"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -19,10 +13,7 @@ import (
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
-	GetRPCConn,
-	GetGreeterClient,
 	NewData,
-	NewGreeterRepo,
 )
 
 // Data .
@@ -30,11 +21,10 @@ type Data struct {
 	DBMap map[string]*gorm.DB
 	Cache map[string]*redis.Client
 	lock  sync.RWMutex
-	hc    v1.GreeterClient
 }
 
 // NewData .
-func NewData(c *conf.Data, hc v1.GreeterClient, logger log.Logger) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
@@ -44,7 +34,6 @@ func NewData(c *conf.Data, hc v1.GreeterClient, logger log.Logger) (*Data, func(
 	data := &Data{
 		DBMap: make(map[string]*gorm.DB),
 		Cache: make(map[string]*redis.Client),
-		hc:    hc,
 	}
 	data.lock.RLock()
 	// gorm.DB
@@ -62,22 +51,4 @@ func NewData(c *conf.Data, hc v1.GreeterClient, logger log.Logger) (*Data, func(
 	data.lock.RUnlock()
 
 	return data, cleanup, nil
-}
-
-// GetRPCConn 获取rpc连接
-func GetRPCConn(etcdClient *clientV3.Client, discovery *conf.Discovery) *grpc.ClientConn {
-	// new dis with etcd client
-	dis := etcd.New(etcdClient)
-	endpoint := "discovery:///provider"
-	conn, err := kGrpc.DialInsecure(context.Background(), kGrpc.WithEndpoint(endpoint), kGrpc.WithDiscovery(dis))
-	if err != nil {
-		panic(err)
-	}
-
-	return conn
-}
-
-// GetGreeterClient 获取GreeterClient
-func GetGreeterClient(conn *grpc.ClientConn) v1.GreeterClient {
-	return v1.NewGreeterClient(conn)
 }

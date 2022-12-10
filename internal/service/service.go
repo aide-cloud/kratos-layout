@@ -5,18 +5,14 @@ import (
 	"embed"
 	"github.com/aide-cloud/graphql-http"
 	"github.com/gin-gonic/gin"
-	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
 
 // ProviderSet is service providers.
 var ProviderSet = wire.NewSet(
-	NewGreeterService,
-	wire.Bind(new(v1.GreeterServer), new(*GreeterService)),
 	NewGraphqlService,
 	NewRoot,
-	NewGreeterGraphqlService,
 )
 
 type GraphqlService struct {
@@ -27,17 +23,11 @@ type (
 	RootInterface interface {
 		Ping() string
 		Check(ctx context.Context, args struct{ In string }) (string, error)
-		GreeterService() *GreeterGraphqlService
 	}
 )
 
 type Root struct {
-	logger  *log.Helper
-	greeter *GreeterGraphqlService
-}
-
-func (r *Root) GreeterService() *GreeterGraphqlService {
-	return r.greeter
+	logger *log.Helper
 }
 
 func (r *Root) Ping() string {
@@ -54,10 +44,9 @@ var _ RootInterface = (*Root)(nil)
 //go:embed sdl
 var content embed.FS
 
-func NewRoot(greeter *GreeterGraphqlService, logger log.Logger) *Root {
+func NewRoot(logger log.Logger) *Root {
 	return &Root{
-		logger:  log.NewHelper(logger),
-		greeter: greeter,
+		logger: log.NewHelper(logger),
 	}
 }
 

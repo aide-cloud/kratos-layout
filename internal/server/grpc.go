@@ -2,7 +2,6 @@ package server
 
 import (
 	prometheus "github.com/aide-cloud/prom"
-	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
 	"github.com/go-kratos/kratos-layout/internal/conf"
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 	"github.com/go-kratos/kratos/v2/log"
@@ -16,7 +15,7 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeterSrv v1.GreeterServer, tp *traceSdk.TracerProvider, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, tp *traceSdk.TracerProvider, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
@@ -39,6 +38,5 @@ func NewGRPCServer(c *conf.Server, greeterSrv v1.GreeterServer, tp *traceSdk.Tra
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 	srv := grpc.NewServer(opts...)
-	v1.RegisterGreeterServer(srv, greeterSrv)
 	return srv
 }

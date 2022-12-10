@@ -85,6 +85,9 @@ func GetTrace(conf *conf.Trace) *traceSdk.TracerProvider {
 }
 
 func newApp(gs *grpc.Server, hs *http.Server, etcdRegistry *etcd.Registry, opts ...kratos.Option) *kratos.App {
-	opts = append(opts, kratos.Server(gs, hs), kratos.Registrar(etcdRegistry))
+	opts = append(opts, kratos.Server(gs, hs))
+	if etcdRegistry != nil {
+		//opts = append(opts, kratos.Registrar(etcdRegistry))
+	}
 	return kratos.New(opts...)
 }

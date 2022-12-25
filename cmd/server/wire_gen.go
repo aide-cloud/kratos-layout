@@ -7,7 +7,9 @@
 package main
 
 import (
+	"github.com/go-kratos/kratos-layout/internal/biz"
 	"github.com/go-kratos/kratos-layout/internal/conf"
+	"github.com/go-kratos/kratos-layout/internal/data"
 	"github.com/go-kratos/kratos-layout/internal/server"
 	"github.com/go-kratos/kratos-layout/internal/service"
 	"github.com/go-kratos/kratos/v2"
@@ -22,14 +24,22 @@ import (
 // wireApp init kratos application.
 func wireApp(bootstrap *conf.Bootstrap) (*kratos.App, func(), error) {
 	confServer := bootstrap.Server
-	trace := bootstrap.Trace
-	tracerProvider := GetTrace(trace)
+	confData := bootstrap.Data
 	log := bootstrap.Log
 	logger := GetLogger(log)
-	grpcServer := server.NewGRPCServer(confServer, tracerProvider, logger)
+	dataData, cleanup, err := data.NewData(confData, logger)
+	if err != nil {
+		return nil, nil, err
+	}
+	pingRepo := data.NewPingRepo(dataData, logger)
+	pingLogic := biz.NewPingLogic(pingRepo, logger)
+	pingService := service.NewPingService(pingLogic, logger)
+	trace := bootstrap.Trace
+	tracerProvider := GetTrace(trace)
+	grpcServer := server.NewGRPCServer(confServer, pingService, tracerProvider, logger)
 	graphqlService := service.NewGraphqlService(logger)
 	root := service.NewRoot(logger)
-	engine := server.GetGinEngine(confServer, graphqlService, root, tracerProvider, logger)
+	engine := server.GetGinEngine(confServer, pingService, graphqlService, root, tracerProvider, logger)
 	httpServer := server.NewHTTPServer(confServer, engine, logger)
 	registrar := bootstrap.Registrar
 	client := GetETCD(registrar)
@@ -38,5 +48,6 @@ func wireApp(bootstrap *conf.Bootstrap) (*kratos.App, func(), error) {
 	v := GetEnv(env, logger)
 	app := newApp(grpcServer, httpServer, registry, v...)
 	return app, func() {
+		cleanup()
 	}, nil
 }

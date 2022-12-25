@@ -3,21 +3,17 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: Ping API
     version: 0.0.1
 paths:
-    /helloworld/{name}:
+    /ping:
         get:
             tags:
-                - Greeter
-                - subgroup
-            description: Sends a greeting
-            operationId: Greeter_SayHello
+                - Ping
+            operationId: Ping_Ping
             parameters:
                 - name: name
-                  in: path
-                  required: true
+                  in: query
                   schema:
                     type: string
             responses:
@@ -26,14 +22,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
+                                $ref: '#/components/schemas/api.ping.v1.PingResponse'
 components:
     schemas:
-        helloworld.v1.HelloReply:
+        api.ping.v1.PingResponse:
             type: object
             properties:
                 message:
                     type: string
-            description: The response message containing the greetings
 tags:
-    - name: Greeter
+    - name: Ping

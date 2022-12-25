@@ -13,6 +13,7 @@ import (
 var ProviderSet = wire.NewSet(
 	NewGraphqlService,
 	NewRoot,
+	NewPingService,
 )
 
 type GraphqlService struct {

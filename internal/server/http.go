@@ -4,6 +4,7 @@ import (
 	prometheus "github.com/aide-cloud/prom"
 	"github.com/gin-gonic/gin"
 	kGin "github.com/go-kratos/gin"
+	v1 "github.com/go-kratos/kratos-layout/api/ping/v1"
 	"github.com/go-kratos/kratos-layout/internal/conf"
 	"github.com/go-kratos/kratos-layout/internal/service"
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
@@ -54,7 +55,7 @@ func NewHTTPServer(c *conf.Server, engine *gin.Engine, _ log.Logger) *http.Serve
 }
 
 // GetGinEngine 获取gin引擎
-func GetGinEngine(c *conf.Server, graphqlServer *service.GraphqlService, root *service.Root, tp *traceSdk.TracerProvider, logger log.Logger) *gin.Engine {
+func GetGinEngine(c *conf.Server, pingService *service.PingService, graphqlServer *service.GraphqlService, root *service.Root, tp *traceSdk.TracerProvider, logger log.Logger) *gin.Engine {
 	if c.Http.GetMode() == gin.ReleaseMode {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -76,5 +77,6 @@ func GetGinEngine(c *conf.Server, graphqlServer *service.GraphqlService, root *s
 
 	ginEngine.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	graphqlServer.RegisterGraphqlGinRouter(root, ginEngine)
+	v1.RegisterPingGinHTTPServer(v1.NewPing(pingService, v1.WithRouter(ginEngine)))
 	return ginEngine
 }

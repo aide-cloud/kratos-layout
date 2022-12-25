@@ -28,7 +28,7 @@ func init() {
 func main() {
 	flag.Parse()
 	cfg := conf.GetConfig(flagConf)
-	SetEnv(cfg.GetEnv())
+	setEnv(cfg.GetEnv())
 	app, cleanup, err := wireApp(cfg)
 	if err != nil {
 		panic(err)

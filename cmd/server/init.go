@@ -29,7 +29,7 @@ func GetEnv(env *conf.Env, logger log.Logger) []kratos.Option {
 	return opts
 }
 
-func SetEnv(env *conf.Env) {
+func setEnv(env *conf.Env) {
 	Name = env.GetName()
 	Metadata = env.GetMetadata()
 	if Version == "" {

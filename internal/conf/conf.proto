@@ -47,19 +47,20 @@ message Log {
 message Data {
   message Database {
     string driver = 1;
-    string source = 2;
-    string db_name = 3;
+    string dsn = 2;
     bool debug = 4;
   }
   message Redis {
     string network = 1;
     string addr = 2;
+    uint32 db = 5;
+    string password = 6;
     google.protobuf.Duration read_timeout = 3;
     google.protobuf.Duration write_timeout = 4;
-    string db_name = 5;
+    google.protobuf.Duration dial_timeout = 7;
   }
-  repeated Database databases = 1;
-  repeated Redis redis = 2;
+  Database database = 1;
+  Redis redis = 2;
 }
 
 
